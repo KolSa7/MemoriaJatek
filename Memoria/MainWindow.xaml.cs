@@ -18,6 +18,9 @@ namespace Memoria
     public partial class MainWindow : Window
     {
         List<string> palyak = new List<string> {"F1","emojik","Fővárosok","matek"};
+        int valasztottPalya = 0;
+        int lepesek = 0;
+        Button choiceOne = null;
         List<string> meret = new List<string> {"2x2","4x4","6x6"};
         List<string> matek = new List<string> {"2 + 3", "5",
     "10 - 4", "6",
@@ -107,21 +110,20 @@ namespace Memoria
                     break;
             }
             string[] items = new string[gridSize];
-            int valasztottPalya = palyak.IndexOf(lbox_palyak.SelectedItem.ToString());
+            valasztottPalya = palyak.IndexOf(lbox_palyak.SelectedItem.ToString());
             switch (valasztottPalya)
             {
                 case 0:
                     f1.CopyTo(0, items, 0, gridSize);
                     break;
                 case 1:
-                    emojik.CopyTo(0, items, 0, gridSize);
-                    emojik.CopyTo(0, items, 0, gridSize);
+                    emojik.CopyTo(0, items, 0, gridSize-1);
                     break;
                 case 2:
-                    fovarosok.CopyTo(0, items, 0, gridSize);
+                    fovarosok.CopyTo(0, items, 0, gridSize-1);
                     break;
                 case 3:
-                    matek.CopyTo(0, items, 0, gridSize);
+                    matek.CopyTo(0, items, 0, gridSize-1);
                     break;
             }
             items.Shuffle();
@@ -138,13 +140,12 @@ namespace Memoria
                 {
                     Button gomb = new Button
                     {
-                        Width=20,
-                        Height=20,
-                        Name= items[counter],
+                        Width=50,
+                        Height=50,
+                        Name= counter.ToString(),
                         Content = "?",
                         FontSize = 20,
                         FontWeight = FontWeights.Bold,
-                        Margin = new Thickness(3)
                     };
                     gomb.Click += Btn_Click;
                     Grid.SetRow(gomb, i);
@@ -156,6 +157,31 @@ namespace Memoria
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
+            Button btn = sender as Button;
+            if (lepesek == 0)
+            {
+                choiceOne = btn;
+
+            }
+            if (lepesek == 1) 
+            {
+                switch (valasztottPalya)
+                {
+                    case 1:
+                        if (choiceOne == btn)
+                        {
+                            choiceOne.Visibility = Visibility.Hidden;
+                            btn.Visibility = Visibility.Hidden;
+                            //score++;
+                            //probalkozasok++;
+                        }
+                        else
+                        {
+
+                        }
+                        break;
+                }
+            }
 
         }
 
@@ -163,6 +189,7 @@ namespace Memoria
         {
             GenerateGrid();
             menu.Visibility = Visibility.Collapsed;
+            
         }
     }
 }
