@@ -19,8 +19,11 @@
             <Button  x:Name="btn_start" Content="Kezdés" Click="btn_start_Click"/>
             
         </StackPanel>
+        <StackPanel x:Name="stats" Grid.Column="0" Visibility="Hidden">
+            <TextBlock x:Name="tries" Text="Próbálkozások: 0"/>
+            <TextBlock x:Name="score" Text="Pontszám: 0"/>
+        </StackPanel>
         <StackPanel Grid.Column="1">
-            <TextBlock x:Name="tries" Text="Próbálkozások: 0" Visibility="Hidden"/>
             <Grid x:Name="gameGrid"/>
         </StackPanel>
     </Grid>
