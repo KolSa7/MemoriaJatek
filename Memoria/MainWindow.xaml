@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Memoria"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -19,9 +19,10 @@
             <Button  x:Name="btn_start" Content="Kezdés" Click="btn_start_Click"/>
             
         </StackPanel>
-        <StackPanel x:Name="stats" Grid.Column="0" Visibility="Hidden">
+        <StackPanel x:Name="gameBar" Grid.Column="0" Visibility="Hidden">
             <TextBlock x:Name="tries" Text="Próbálkozások: 0"/>
             <TextBlock x:Name="score" Text="Pontszám: 0"/>
+            <Button x:Name="btn_reveal" Content="NE NYOMD MEG" Click="btn_reveal_Click"/>
         </StackPanel>
         <StackPanel Grid.Column="1">
             <Grid x:Name="gameGrid"/>
