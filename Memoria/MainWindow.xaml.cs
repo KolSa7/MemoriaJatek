@@ -17,10 +17,12 @@ namespace Memoria
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<string> palyak = new List<string> {"F1","emojik","Fővárosok","matek"};
         int valasztottPalya = 0;
         int lepesek = 1;
         int pontszam = 0;
+
+        int remainingItems;
+        List<string> palyak = new List<string> {"F1","emojik","Fővárosok","matek"};
         Button choiceOne = null;
         Button choiceTwo = null;
         List<string> meret = new List<string> {"2x2","4x4","6x6"};
@@ -130,7 +132,8 @@ namespace Memoria
                     gridSize=4;
                     break;
             }
-            string[] items = new string[gridSize];
+            remainingItems = gridSize;
+            string []items = new string[gridSize];
             valasztottPalya = palyak.IndexOf(lbox_palyak.SelectedItem.ToString());
             switch (valasztottPalya)
             {
@@ -214,7 +217,8 @@ namespace Memoria
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam++;
+                        pontszam+=100;
+                        remainingItems -= 2;
                     }
                     else
                     {
@@ -227,7 +231,8 @@ namespace Memoria
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam++;
+                        pontszam+=100;
+                        remainingItems -= 2;
                     }
                     else
                     {
@@ -252,7 +257,8 @@ namespace Memoria
                 {
                     choiceOne.Visibility = Visibility.Hidden;
                     choiceTwo.Visibility = Visibility.Hidden;
-                    pontszam++;
+                    pontszam+=100;
+                    remainingItems -= 2;
                 }
                 else
                 {
@@ -263,12 +269,30 @@ namespace Memoria
             choiceOne = null;
             choiceTwo = null;
             score.Text = "Pontszám: " + pontszam;
+            if (remainingItems == 0)
+            {
+                MessageBox.Show("Gratulálok! Nyertél! A pontszámod: " + pontszam);
+                menu.Visibility = Visibility.Visible;
+                stats.Visibility = Visibility.Hidden;
+                gameGrid.Children.Clear();
+                gameGrid.RowDefinitions.Clear();
+                gameGrid.ColumnDefinitions.Clear();
+                lepesek = 1;
+                pontszam = 0;
+            }
         }
         private void btn_start_Click(object sender, RoutedEventArgs e)
         {
+            if (lbox_meret.SelectedItem == null || lbox_palyak.SelectedItem == null)
+            {
+                MessageBox.Show("Kérlek válassz egy pályát és egy méretet!");
+            }
+            else
+            {
             GenerateGrid();
             menu.Visibility = Visibility.Hidden;
             stats.Visibility = Visibility.Visible;
+            }
         }
     }
 }
