@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -21,11 +22,15 @@ namespace Memoria
         int lepesek = 1;
         int pontszam = 0;
 
+        int rosszLepesek = 0;
+
+        int elozoPontszam = 0;
+
         int remainingItems;
-        List<string> palyak = new List<string> {"F1","emojik","Fővárosok","matek"};
+        List<string> palyak = new List<string> { "F1", "emojik", "Fővárosok", "matek" };
         Button choiceOne = null;
         Button choiceTwo = null;
-        List<string> meret = new List<string> {"2x2","4x4","6x6"};
+        List<string> meret = new List<string> { "2x2", "4x4", "6x6" };
         List<string> matek = new List<string> {"2 + 3", "5",
     "10 - 4", "6",
     "3 * 4", "12",
@@ -107,20 +112,20 @@ namespace Memoria
         public MainWindow()
         {
             InitializeComponent();
-            lbox_meret.ItemsSource=meret;
-            lbox_palyak.ItemsSource=palyak;
+            lbox_meret.ItemsSource = meret;
+            lbox_palyak.ItemsSource = palyak;
         }
 
 
 
         private void GenerateGrid()
         {
-            int gridSize =0;
+            int gridSize = 0;
             int valasztottMeret = meret.IndexOf(lbox_meret.SelectedItem.ToString());
-            switch (valasztottMeret) 
-            { 
+            switch (valasztottMeret)
+            {
                 case 0:
-                    gridSize=4;
+                    gridSize = 4;
                     break;
                 case 1:
                     gridSize = 16;
@@ -129,11 +134,11 @@ namespace Memoria
                     gridSize = 36;
                     break;
                 default:
-                    gridSize=4;
+                    gridSize = 4;
                     break;
             }
             remainingItems = gridSize;
-            string []items = new string[gridSize];
+            string[] items = new string[gridSize];
             valasztottPalya = palyak.IndexOf(lbox_palyak.SelectedItem.ToString());
             switch (valasztottPalya)
             {
@@ -159,15 +164,15 @@ namespace Memoria
 
             }
             int counter = 0;
-            for (int i = 0; i < Math.Sqrt(gridSize); i++) 
+            for (int i = 0; i < Math.Sqrt(gridSize); i++)
             {
                 for (int j = 0; j < Math.Sqrt(gridSize); j++)
                 {
                     Button gomb = new Button
                     {
-                        Height=75,
+                        Height = 100,
                         Tag = items[counter],
-                        Name= "btn_" + counter,
+                        Name = "btn_" + counter,
                         Content = "?",
                         FontSize = 20,
                         FontWeight = FontWeights.Bold,
@@ -185,11 +190,11 @@ namespace Memoria
             Button btn = sender as Button;
             btn.Content = btn.Tag.ToString();
             await Task.Delay(1000);
-            if (lepesek %2!=0)
+            if (lepesek % 2 != 0)
             {
                 choiceOne = btn;
             }
-            else 
+            else
             {
                 choiceTwo = btn;
                 choiceTwo.Content = choiceTwo.Tag.ToString();
@@ -201,27 +206,25 @@ namespace Memoria
 
         private void BtnHandling()
         {
-            tries.Text = "Lépések száma: " + (lepesek+1) / 2;
-            int indexOne=0;
-            int indexTwo=0;
-            bool c1;
-            bool c2;
+            tries.Text = "Lépések száma: " + (lepesek + 1) / 2;
+            int indexOne = 0;
+            int indexTwo = 0;
             switch (valasztottPalya)
             {
                 case 0:
                     indexOne = f1.IndexOf(choiceOne.Tag.ToString());
                     indexTwo = f1.IndexOf(choiceTwo.Tag.ToString());
-                    c1= indexOne % 2 == 0&&(indexTwo - 1 == indexOne ||indexTwo+1==indexOne);
-                    c2= indexTwo % 2 == 0&&(indexOne - 1 == indexTwo ||indexOne+1==indexTwo);
-                    if (c1 || c2)
+
+                    if ((indexOne % 2 == 0 && (indexTwo - 1 == indexOne || indexTwo + 1 == indexOne) || (indexTwo % 2 == 0 && (indexOne - 1 == indexTwo || indexOne + 1 == indexTwo))))
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam+=100;
+                        pontszam += 100;
                         remainingItems -= 2;
                     }
                     else
                     {
+                        rosszLepesek++;
                         choiceOne.Content = "?";
                         choiceTwo.Content = "?";
                     }
@@ -231,11 +234,12 @@ namespace Memoria
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam+=100;
+                        pontszam += 100;
                         remainingItems -= 2;
                     }
                     else
                     {
+                        rosszLepesek++;
                         choiceOne.Content = "?";
                         choiceTwo.Content = "?";
                     }
@@ -249,37 +253,39 @@ namespace Memoria
                     indexTwo = matek.IndexOf(choiceTwo.Tag.ToString());
                     break;
             }
-            if (valasztottPalya>1)
+            if (valasztottPalya > 1)
             {
-                c1 = indexOne % 2 == 0 && indexTwo - 1 == indexOne;
-                c2 = indexOne % 2 != 0 && indexTwo + 1 == indexOne;
-                if (c1 || c2)
+
+                if ((indexOne % 2 == 0 && indexTwo - 1 == indexOne) || (indexOne % 2 != 0 && indexTwo + 1 == indexOne))
                 {
                     choiceOne.Visibility = Visibility.Hidden;
                     choiceTwo.Visibility = Visibility.Hidden;
-                    pontszam+=100;
+                    pontszam += 100;
                     remainingItems -= 2;
                 }
                 else
                 {
+                    rosszLepesek++;
                     choiceOne.Content = "?";
                     choiceTwo.Content = "?";
                 }
             }
-            choiceOne = null;
-            choiceTwo = null;
             score.Text = "Pontszám: " + pontszam;
             if (remainingItems == 0)
             {
-                MessageBox.Show("Gratulálok! Nyertél! A pontszámod: " + pontszam);
+                elozoPontszam = pontszam - (rosszLepesek*50);
+                MessageBox.Show("Gratulálok! Nyertél! A pontszámod: " + elozoPontszam);
                 menu.Visibility = Visibility.Visible;
-                stats.Visibility = Visibility.Hidden;
+                gameBar.Visibility = Visibility.Hidden;
                 gameGrid.Children.Clear();
                 gameGrid.RowDefinitions.Clear();
                 gameGrid.ColumnDefinitions.Clear();
                 lepesek = 1;
                 pontszam = 0;
+                rosszLepesek = 0;
             }
+            choiceOne = null;
+            choiceTwo = null;
         }
         private void btn_start_Click(object sender, RoutedEventArgs e)
         {
@@ -289,10 +295,41 @@ namespace Memoria
             }
             else
             {
-            GenerateGrid();
-            menu.Visibility = Visibility.Hidden;
-            stats.Visibility = Visibility.Visible;
+                GenerateGrid();
+                menu.Visibility = Visibility.Hidden;
+                gameBar.Visibility = Visibility.Visible;
+                if (elozoPontszam > 0)
+                {
+                    btn_reveal.Visibility = Visibility.Hidden;
+                }
+                reveal();
             }
+        }
+        async void reveal()
+        {
+            foreach (Button btn in gameGrid.Children)
+            {
+                btn.Content = btn.Tag.ToString();
+                await Task.Delay(100);
+            }
+            await Task.Delay(200);
+            foreach (Button btn in gameGrid.Children)
+            {
+                btn.Content = "?";
+            }
+        }
+        private void btn_reveal_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if(elozoPontszam <0)
+            {
+                    reveal();
+            }
+            else
+            {
+                MessageBox.Show("Grrr miért nyomtál meg >:(");
+            }
+            btn.Visibility = Visibility.Hidden;
         }
     }
 }
