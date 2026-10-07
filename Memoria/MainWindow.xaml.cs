@@ -20,7 +20,7 @@ namespace Memoria
     {
         int valasztottPalya = 0;
         int lepesek = 1;
-        int pontszam = 0;
+        int parok = 0;
 
         int rosszLepesek = 0;
 
@@ -206,7 +206,6 @@ namespace Memoria
 
         private void BtnHandling()
         {
-            tries.Text = "Lépések száma: " + (lepesek + 1) / 2;
             int indexOne = 0;
             int indexTwo = 0;
             switch (valasztottPalya)
@@ -219,7 +218,7 @@ namespace Memoria
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam += 100;
+                        parok ++;
                         remainingItems -= 2;
                     }
                     else
@@ -234,7 +233,7 @@ namespace Memoria
                     {
                         choiceOne.Visibility = Visibility.Hidden;
                         choiceTwo.Visibility = Visibility.Hidden;
-                        pontszam += 100;
+                        parok ++;
                         remainingItems -= 2;
                     }
                     else
@@ -260,7 +259,7 @@ namespace Memoria
                 {
                     choiceOne.Visibility = Visibility.Hidden;
                     choiceTwo.Visibility = Visibility.Hidden;
-                    pontszam += 100;
+                    parok ++;
                     remainingItems -= 2;
                 }
                 else
@@ -270,18 +269,18 @@ namespace Memoria
                     choiceTwo.Content = "?";
                 }
             }
-            score.Text = "Pontszám: " + pontszam;
+            score.Text = "Párok: " + parok;
+            tries.Text = "Lépések száma: " + (lepesek + 1) / 2;
             if (remainingItems == 0)
             {
-                elozoPontszam = pontszam - (rosszLepesek*50);
+                elozoPontszam = parok*100 - (rosszLepesek*50);
                 MessageBox.Show("Gratulálok! Nyertél! A pontszámod: " + elozoPontszam);
                 menu.Visibility = Visibility.Visible;
                 gameBar.Visibility = Visibility.Hidden;
                 gameGrid.Children.Clear();
                 gameGrid.RowDefinitions.Clear();
                 gameGrid.ColumnDefinitions.Clear();
-                lepesek = 1;
-                pontszam = 0;
+                parok = 0;
                 rosszLepesek = 0;
             }
             choiceOne = null;
@@ -295,12 +294,13 @@ namespace Memoria
             }
             else
             {
+                lepesek = 1;
                 GenerateGrid();
                 menu.Visibility = Visibility.Hidden;
                 gameBar.Visibility = Visibility.Visible;
-                if (elozoPontszam > 0)
+                if (elozoPontszam < 0)
                 {
-                    btn_reveal.Visibility = Visibility.Hidden;
+                    btn_reveal.Visibility = Visibility.Visible;
                 }
                 reveal();
             }

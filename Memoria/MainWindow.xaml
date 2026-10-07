@@ -20,9 +20,9 @@
             
         </StackPanel>
         <StackPanel x:Name="gameBar" Grid.Column="0" Visibility="Hidden">
-            <TextBlock x:Name="tries" Text="Próbálkozások: 0"/>
+            <TextBlock x:Name="tries" Text="Párok: 0"/>
             <TextBlock x:Name="score" Text="Pontszám: 0"/>
-            <Button x:Name="btn_reveal" Content="NE NYOMD MEG" Click="btn_reveal_Click"/>
+            <Button x:Name="btn_reveal" Content="Felfedés" Click="btn_reveal_Click"/>
         </StackPanel>
         <StackPanel Grid.Column="1">
             <Grid x:Name="gameGrid"/>
