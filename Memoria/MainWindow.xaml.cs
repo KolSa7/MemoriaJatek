@@ -18,18 +18,15 @@ namespace Memoria
     /// </summary>
     public partial class MainWindow : Window
     {
-        int valasztottPalya = 0;
-        int lepesek = 1;
-        int parok = 0;
-
-        int rosszLepesek = 0;
-
-        int elozoPontszam = 0;
-
-        int remainingItems;
+        int valasztottPalya = 0; //listboxbol valasztott palya indexe a palyak listabol
+        int lepesek = 1;//felforditasok szama+1 
+        int parok = 0;//megtalalt parok szama
+        int rosszLepesek = 0;//rossz parok szama
+        int elozoPontszam = 0;//elozo jatek pontszama, a felfedes megjelenitesehez van hasznalva
+        int remainingItems;//a kartyak szama alapol, -2 mindenn jo valaszkor, ha 0 vege a jateknak
         List<string> palyak = new List<string> { "F1", "emojik", "Fővárosok", "matek" };
-        Button choiceOne = null;
-        Button choiceTwo = null;
+        Button choiceOne = null;//elso felforditott kartya
+        Button choiceTwo = null;//masodik felforditott kartya
         List<string> meret = new List<string> { "2x2", "4x4", "6x6" };
         List<string> matek = new List<string> {"2 + 3", "5",
     "10 - 4", "6",
@@ -115,14 +112,10 @@ namespace Memoria
             lbox_meret.ItemsSource = meret;
             lbox_palyak.ItemsSource = palyak;
         }
-
-
-
         private void GenerateGrid()
         {
             int gridSize = 0;
-            int valasztottMeret = meret.IndexOf(lbox_meret.SelectedItem.ToString());
-            switch (valasztottMeret)
+            switch (lbox_meret.SelectedIndex)
             {
                 case 0:
                     gridSize = 4;
@@ -133,17 +126,14 @@ namespace Memoria
                 case 2:
                     gridSize = 36;
                     break;
-                default:
-                    gridSize = 4;
-                    break;
             }
             remainingItems = gridSize;
-            string[] items = new string[gridSize];
-            valasztottPalya = palyak.IndexOf(lbox_palyak.SelectedItem.ToString());
-            switch (valasztottPalya)
+            string[] items = new string[gridSize];//palya meretene nagysagu tomb a gomboknak
+            valasztottPalya = lbox_palyak.SelectedIndex;
+            switch (valasztottPalya)//bemásolja az items listába az első gridSize elemet az adott listából
             {
                 case 0:
-                    f1.CopyTo(0, items, 0, gridSize);
+                    f1.CopyTo(0, items, 0, gridSize);//első 0: az index amitől az index tömbbe másol, második 0: az index amitől másolja a listából az elemeket
                     break;
                 case 1:
                     emojik.CopyTo(0, items, 0, gridSize);
@@ -156,23 +146,23 @@ namespace Memoria
                     break;
             }
             Random rng = new Random();
-            rng.Shuffle(items);
+            rng.Shuffle(items);//összekeveri a tömböt
             for (int i = 0; i < Math.Sqrt(gridSize); i++)
             {
                 gameGrid.RowDefinitions.Add(new RowDefinition());
                 gameGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             }
-            int counter = 0;
+            int counter = 0;//név adáshoz kell
             for (int i = 0; i < Math.Sqrt(gridSize); i++)
             {
                 for (int j = 0; j < Math.Sqrt(gridSize); j++)
                 {
                     Button gomb = new Button
                     {
-                        Height = 100,
-                        Tag = items[counter],
-                        Name = "btn_" + counter,
+                        Height = 75,
+                        Tag = items[counter],//tag lesz a felfordított kártya contentje
+                        Name = "btn_" + counter,//kell, hogy ne tudja a játékos egy pár helyett kétszer ugyanazt a gombot felfordítani
                         Content = "?",
                         FontSize = 20,
                         FontWeight = FontWeights.Bold,
@@ -185,7 +175,7 @@ namespace Memoria
                 }
             }
         }
-        async void Btn_Click(object sender, RoutedEventArgs e)//async mert lusta vagyok jobban optimizalni prolly
+        private async void Btn_Click(object sender, RoutedEventArgs e)//async mert így dinamikusabb a kód, nem baj ha gyorsan fordít a játékos
         {
             Button btn = sender as Button;
             btn.Content = btn.Tag.ToString();
@@ -197,51 +187,21 @@ namespace Memoria
             else
             {
                 choiceTwo = btn;
-                choiceTwo.Content = choiceTwo.Tag.ToString();
                 BtnHandling();
             }
             lepesek++;
-
         }
-
         private void BtnHandling()
         {
-            int indexOne = 0;
-            int indexTwo = 0;
+            int indexOne = 0;//az első felfordított kártya indexe a választott pályához tartozó listában
+            int indexTwo = 0;//az második felfordított kártya indexe a választott pályához tartozó listában
             switch (valasztottPalya)
             {
                 case 0:
                     indexOne = f1.IndexOf(choiceOne.Tag.ToString());
                     indexTwo = f1.IndexOf(choiceTwo.Tag.ToString());
-
-                    if ((indexOne % 2 == 0 && (indexTwo - 1 == indexOne || indexTwo + 1 == indexOne) || (indexTwo % 2 == 0 && (indexOne - 1 == indexTwo || indexOne + 1 == indexTwo))))
-                    {
-                        choiceOne.Visibility = Visibility.Hidden;
-                        choiceTwo.Visibility = Visibility.Hidden;
-                        parok ++;
-                        remainingItems -= 2;
-                    }
-                    else
-                    {
-                        rosszLepesek++;
-                        choiceOne.Content = "?";
-                        choiceTwo.Content = "?";
-                    }
                     break;
                 case 1:
-                    if (choiceOne.Tag.ToString() == choiceTwo.Tag.ToString() && choiceTwo.Name != choiceOne.Name)
-                    {
-                        choiceOne.Visibility = Visibility.Hidden;
-                        choiceTwo.Visibility = Visibility.Hidden;
-                        parok ++;
-                        remainingItems -= 2;
-                    }
-                    else
-                    {
-                        rosszLepesek++;
-                        choiceOne.Content = "?";
-                        choiceTwo.Content = "?";
-                    }
                     break;
                 case 2:
                     indexOne = fovarosok.IndexOf(choiceOne.Tag.ToString());
@@ -252,28 +212,42 @@ namespace Memoria
                     indexTwo = matek.IndexOf(choiceTwo.Tag.ToString());
                     break;
             }
-            if (valasztottPalya > 1)
-            {
 
-                if ((indexOne % 2 == 0 && indexTwo - 1 == indexOne) || (indexOne % 2 != 0 && indexTwo + 1 == indexOne))
-                {
-                    choiceOne.Visibility = Visibility.Hidden;
-                    choiceTwo.Visibility = Visibility.Hidden;
-                    parok ++;
-                    remainingItems -= 2;
-                }
-                else
-                {
-                    rosszLepesek++;
-                    choiceOne.Content = "?";
-                    choiceTwo.Content = "?";
-                }
+            if (valasztottPalya==0&& ((indexOne % 2 == 0 && (indexTwo - 1 == indexOne || indexTwo + 1 == indexOne) || (indexTwo % 2 == 0 && (indexOne - 1 == indexTwo || indexOne + 1 == indexTwo)))))
+                //ha az első kártya indexe páros, akkor a -1/+1. index kell legyen a második kártya indexe és vica verza
+            {
+                choiceOne.Visibility = Visibility.Hidden;
+                choiceTwo.Visibility = Visibility.Hidden;
+                parok++;
+                remainingItems -= 2;
+            }
+            else if (valasztottPalya==1&&(choiceOne.Tag== choiceTwo.Tag && choiceTwo.Name != choiceOne.Name))
+            //ha nem kétszer ugyanarra a kártyára nyomunk és a két jártya tagje megegyezik
+            {
+                choiceOne.Visibility = Visibility.Hidden;
+                choiceTwo.Visibility = Visibility.Hidden;
+                parok++;
+                remainingItems -= 2;
+            }
+            else if (valasztottPalya > 1&& ((indexOne % 2 == 0 && indexTwo - 1 == indexOne) || (indexOne % 2 != 0 && indexTwo + 1 == indexOne)))
+            //ha az első kártya indexe páros, akkor a -1. index kell legyen a második kártya indexe és vica verza
+            {
+                choiceOne.Visibility = Visibility.Hidden;
+                choiceTwo.Visibility = Visibility.Hidden;
+                parok++;
+                remainingItems -= 2;   
+            }
+            else//ha nem jó párt választott
+            {
+                rosszLepesek++;
+                choiceOne.Content = "?";
+                choiceTwo.Content = "?";
             }
             score.Text = "Párok: " + parok;
             tries.Text = "Lépések száma: " + (lepesek + 1) / 2;
             if (remainingItems == 0)
             {
-                elozoPontszam = parok*100 - (rosszLepesek*50);
+                elozoPontszam = parok * 100 - (rosszLepesek * 50);
                 MessageBox.Show("Gratulálok! Nyertél! A pontszámod: " + elozoPontszam);
                 menu.Visibility = Visibility.Visible;
                 gameBar.Visibility = Visibility.Hidden;
@@ -298,14 +272,14 @@ namespace Memoria
                 GenerateGrid();
                 menu.Visibility = Visibility.Hidden;
                 gameBar.Visibility = Visibility.Visible;
-                if (elozoPontszam < 0)
+                if (elozoPontszam < 0)//segítség gombo(ka)t revealeli ha előző körben kevés pontod volt
                 {
                     btn_reveal.Visibility = Visibility.Visible;
                 }
                 reveal();
             }
         }
-        async void reveal()
+        private async void reveal()//async a click működéséből kiindulva
         {
             foreach (Button btn in gameGrid.Children)
             {
@@ -321,14 +295,7 @@ namespace Memoria
         private void btn_reveal_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            if(elozoPontszam <0)
-            {
-                    reveal();
-            }
-            else
-            {
-                MessageBox.Show("Grrr miért nyomtál meg >:(");
-            }
+            reveal();
             btn.Visibility = Visibility.Hidden;
         }
     }
