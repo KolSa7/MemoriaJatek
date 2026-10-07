@@ -114,17 +114,22 @@ namespace Memoria
         }
         private void GenerateGrid()
         {
+            Random rng = new Random();
             int gridSize = 0;
+            int start=0;//randomizálja, hogy honnantól másolja ki a kártyákat a listából, így randomabb
             switch (lbox_meret.SelectedIndex)
             {
                 case 0:
                     gridSize = 4;
+                    start=rng.Next(0,16)*2;
                     break;
                 case 1:
                     gridSize = 16;
+                    start = rng.Next(0, 10)*2;
                     break;
                 case 2:
                     gridSize = 36;
+                    start = 0;
                     break;
             }
             remainingItems = gridSize;
@@ -133,7 +138,7 @@ namespace Memoria
             switch (valasztottPalya)//bemásolja az items listába az első gridSize elemet az adott listából
             {
                 case 0:
-                    f1.CopyTo(0, items, 0, gridSize);//első 0: az index amitől az index tömbbe másol, második 0: az index amitől másolja a listából az elemeket
+                    f1.CopyTo(start, items, 0, gridSize);//első 0: az index amitől az index tömbbe másol, második 0: az index amitől másolja a listából az elemeket
                     break;
                 case 1:
                     emojik.CopyTo(0, items, 0, gridSize);
@@ -145,7 +150,6 @@ namespace Memoria
                     matek.CopyTo(0, items, 0, gridSize);
                     break;
             }
-            Random rng = new Random();
             rng.Shuffle(items);//összekeveri a tömböt
             for (int i = 0; i < Math.Sqrt(gridSize); i++)
             {
@@ -214,7 +218,7 @@ namespace Memoria
             }
 
             if (valasztottPalya==0&& ((indexOne % 2 == 0 && (indexTwo - 1 == indexOne || indexTwo + 1 == indexOne) || (indexTwo % 2 == 0 && (indexOne - 1 == indexTwo || indexOne + 1 == indexTwo)))))
-                //ha az első kártya indexe páros, akkor a -1/+1. index kell legyen a második kártya indexe és vica verza
+            //ha az első kártya indexe páros, akkor a -1/+1. index kell legyen a második kártya indexe és vica verza
             {
                 choiceOne.Visibility = Visibility.Hidden;
                 choiceTwo.Visibility = Visibility.Hidden;
