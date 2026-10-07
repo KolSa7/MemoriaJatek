@@ -121,7 +121,7 @@ namespace Memoria
             {
                 case 0:
                     gridSize = 4;
-                    start=rng.Next(0,16)*2;
+                    start=rng.Next(0,16)*2;//nem használandó párok közül kiválaszt egyet random, azutáni párokkal tölti fel a gridet
                     break;
                 case 1:
                     gridSize = 16;
@@ -141,13 +141,13 @@ namespace Memoria
                     f1.CopyTo(start, items, 0, gridSize);//első 0: az index amitől az index tömbbe másol, második 0: az index amitől másolja a listából az elemeket
                     break;
                 case 1:
-                    emojik.CopyTo(0, items, 0, gridSize);
+                    emojik.CopyTo(start, items, 0, gridSize);
                     break;
                 case 2:
-                    fovarosok.CopyTo(0, items, 0, gridSize);
+                    fovarosok.CopyTo(start, items, 0, gridSize);
                     break;
                 case 3:
-                    matek.CopyTo(0, items, 0, gridSize);
+                    matek.CopyTo(start, items, 0, gridSize);
                     break;
             }
             rng.Shuffle(items);//összekeveri a tömböt
